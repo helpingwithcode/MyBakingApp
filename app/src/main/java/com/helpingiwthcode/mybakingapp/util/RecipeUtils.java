@@ -1,6 +1,7 @@
 package com.helpingiwthcode.mybakingapp.util;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
@@ -12,6 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import io.realm.RealmObject;
 import timber.log.Timber;
 
 /**
@@ -22,63 +26,101 @@ public class RecipeUtils {
     public static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
     public static final String BROADCAST_PERMISSIONS_GRANTED = "recipe.permissions.granted";
     public static final String BROADCAST_PERMISSIONS_DENIED = "recipe.permissions.denied";
+    public static final String BROADCAST_DONE_INSERTING = "broadcast.insert.finish";
+    private static ArrayList<RealmObject> realmObjectsToInsert;
+    private static int TOTAL_CLASSES_TO_INSERT = 3;
+    private static int CLASSES_READY_TO_INSERT;
 
     public static void parseServerResponse(String responseString, Context context) {
+        realmObjectsToInsert = new ArrayList<>();
+        CLASSES_READY_TO_INSERT = 0;
+        RealmMethods.objectToInsert = 0;
         try {
             JSONArray response = new JSONArray(responseString);
-            Timber.e("response.length: "+response.length());
             JSONObject recipe;
             int recipeId;
+            RealmMethods.objectToInsert = response.length() * TOTAL_CLASSES_TO_INSERT;
             for (int i = 0; i < response.length(); i++) {
                 recipe = new JSONObject(String.valueOf(response.get(i)));
                 recipeId = recipe.getInt("id");
-                createRecipe(recipe);
-                createIngredients(recipe.get("ingredients"),recipeId);
-                createSteps(recipe.get("steps"),recipeId);
+                createRecipe(recipe, context);
+                createIngredients(recipe.get("ingredients"), recipeId, context);
+                createSteps(recipe.get("steps"), recipeId, context);
             }
-        }
-        catch (Exception e){
-            Timber.e("expetion on parseServerResponse: "+e.getLocalizedMessage());
+        } catch (Exception e) {
+            Timber.e("expetion on parseServerResponse: " + e.getLocalizedMessage());
         }
     }
 
-    private static void createSteps(Object steps, int recipeId) {
-        Timber.e("Steps from Recipe["+recipeId+"]: "+steps.toString());
-        try {
-            JSONArray stepsArray = new JSONArray(steps.toString());
-            JSONObject step;
-            Steps realmSteps;
-            for (int i = 0; i < stepsArray.length(); i++) {
-                step = new JSONObject(String.valueOf(stepsArray.get(i)));
-                realmSteps = new Gson().fromJson(step.toString(),Steps.class);
-                realmSteps.setRecipeId(recipeId);
-                RealmMethods.insertWithTransaction(realmSteps);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private static void createSteps(final Object steps, final int recipeId, final Context context) {
+        new AsyncTask() {
 
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    JSONArray stepsArray = new JSONArray(steps.toString());
+                    JSONObject step;
+                    Steps realmSteps;
+                    for (int i = 0; i < stepsArray.length(); i++) {
+                        step = new JSONObject(String.valueOf(stepsArray.get(i)));
+                        realmSteps = new Gson().fromJson(step.toString(),Steps.class);
+                        realmSteps.setRecipeId(recipeId);
+                        realmSteps.setOrder(Integer.parseInt(recipeId+""+i));
+                        realmObjectsToInsert.add(realmSteps);
+                    }
+                } catch (JSONException e) {
+                    Timber.e("Exception on createSteps: "+e.getLocalizedMessage());
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                startInsertion(context);
+            }
+        }.execute();
     }
 
-    private static void createIngredients(Object ingredients, int recipeId) {
-        Timber.e("Ingredients from Recipe["+recipeId+"]: "+ingredients.toString());
-        try {
-            JSONArray ingredientsArray = new JSONArray(ingredients.toString());
-            JSONObject ingredient;
-            Ingredients realmIngredient;
-            for (int i = 0; i < ingredientsArray.length(); i++) {
-                ingredient = new JSONObject(String.valueOf(ingredientsArray.get(i)));
-                realmIngredient = new Gson().fromJson(ingredient.toString(),Ingredients.class);
-                realmIngredient.setRecipeId(recipeId);
-                RealmMethods.insertWithTransaction(realmIngredient);
+    private static void createIngredients(final Object ingredients, final int recipeId, final Context context) {
+        new AsyncTask(){
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    JSONArray ingredientsArray = new JSONArray(ingredients.toString());
+                    JSONObject ingredient;
+                    Ingredients realmIngredient;
+                    for (int i = 0; i < ingredientsArray.length(); i++) {
+                        ingredient = new JSONObject(String.valueOf(ingredientsArray.get(i)));
+                        realmIngredient = new Gson().fromJson(ingredient.toString(), Ingredients.class);
+                        realmIngredient.setRecipeId(recipeId);
+                        realmIngredient.setOrder(Integer.parseInt(recipeId+""+i));
+                        realmObjectsToInsert.add(realmIngredient);
+                    }
+                } catch (JSONException e) {
+                    Timber.e("Exception on createIngredients: "+e.getLocalizedMessage());
+                }
+                return null;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                startInsertion(context);
+            }
+        }.execute();
     }
 
-    private static void createRecipe(JSONObject recipe) {
-        Recipe realmRecipe = new Gson().fromJson(recipe.toString(),Recipe.class);
-        RealmMethods.insertWithTransaction(realmRecipe);
+    private static void startInsertion(Context context) {
+        CLASSES_READY_TO_INSERT++;
+        if(CLASSES_READY_TO_INSERT == RealmMethods.objectToInsert)
+            RealmMethods.insertWithTransaction(realmObjectsToInsert,context);
+    }
+
+    private static void createRecipe(JSONObject recipe, Context context) {
+        Recipe realmRecipe = new Gson().fromJson(recipe.toString(), Recipe.class);
+        realmObjectsToInsert.add(realmRecipe);
+        startInsertion(context);
     }
 }

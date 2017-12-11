@@ -21,13 +21,11 @@ public class VolleyUtils {
         final StringRequest toSend = new StringRequest(Request.Method.GET , urlPath, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Timber.e("onResponse");
                 RecipeUtils.parseServerResponse(response,context);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Timber.e("onErrorResponse");
                 BroadcastUtils.sendBroadcast(context, BroadcastUtils.RECIPE_LOAD_ERROR);
             }
         }){};

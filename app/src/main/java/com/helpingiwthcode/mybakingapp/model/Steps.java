@@ -1,6 +1,7 @@
 package com.helpingiwthcode.mybakingapp.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by root on 08/12/17.
@@ -8,12 +9,14 @@ import io.realm.RealmObject;
 
 public class Steps extends RealmObject {
 
+    @PrimaryKey
+    private int order;
     private int id;
     private int recipeId;
     private String shortDescription;
     private String description;
-    private String videoURL;
     private String thumbnailURL;
+    private String videoURL;
 
     public int getId() {
         return id;
@@ -61,5 +64,13 @@ public class Steps extends RealmObject {
 
     public void setRecipeId(int recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
