@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -56,6 +57,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     private int recipeId;
     private RealmResults<Steps> steps;
     private RecipeStepsAdapter stepsAdapter;
+    private DividerItemDecoration mDividerItemDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         stepsRv.setLayoutManager(linearLayoutManager);
         stepsRv.setAdapter(stepsAdapter);
+        mDividerItemDecoration = new DividerItemDecoration(
+                stepsRv.getContext(),
+                linearLayoutManager.getOrientation()
+        );
+        stepsRv.addItemDecoration(mDividerItemDecoration);
     }
 
     private void setVideoPlay() {

@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             firstPermissionCheck = false;
             Utils.checkPermissions(MainActivity.this, getApplicationContext());
         }
+        else
+            getRecipes();
     }
 
     @Override
