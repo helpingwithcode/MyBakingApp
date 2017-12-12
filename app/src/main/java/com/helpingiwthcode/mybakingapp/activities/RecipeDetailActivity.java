@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -33,6 +36,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeStepsAdapter;
+import com.helpingiwthcode.mybakingapp.model.Ingredients;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
@@ -41,6 +45,7 @@ import java.util.Timer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import timber.log.Timber;
@@ -51,13 +56,19 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     @BindView(R.id.playerView) SimpleExoPlayerView mPlayerView;
-    @BindView(R.id.rv_steps)
-    RecyclerView stepsRv;
+    @BindView(R.id.rv_steps) RecyclerView stepsRv;
+    @BindView(R.id.bt_steps) Button stepsBt;
+    @BindView(R.id.bt_ingredients) Button ingredientsBt;
+    @BindView(R.id.tv_ingredients)
+    TextView ingredientsTv;
     private Recipe recipe;
     private int recipeId;
     private RealmResults<Steps> steps;
     private RecipeStepsAdapter stepsAdapter;
     private DividerItemDecoration mDividerItemDecoration;
+    private String INGREDIENTS = "ingredients";
+    private String STEPS = "steps";
+    private String showingView = STEPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,14 +80,52 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
 //        setVideoPlay();
     }
 
+    @OnClick({R.id.bt_ingredients, R.id.bt_steps})
+    public void onButtonClick(View v){
+        switch (v.getId()){
+            case R.id.bt_ingredients:
+                if(showingView.equals(INGREDIENTS))
+                    return;
+                showingView = INGREDIENTS;
+                showSelectedView();
+                break;
+            case R.id.bt_steps:
+                if(showingView.equals(STEPS))
+                    return;
+                showingView = STEPS;
+                showSelectedView();
+                break;
+        }
+    }
+
+    private void showSelectedView() {
+        boolean showingSteps = (showingView.equals(STEPS));
+        stepsRv.setVisibility((showingSteps)?View.VISIBLE:View.GONE);
+        ingredientsTv.setVisibility((!showingSteps)?View.VISIBLE:View.GONE);
+    }
+
     private void getRecipeIntent() {
         Bundle extra = getIntent().getExtras();
         if(extra != null){
             recipeId = extra.getInt("recipeId",0);
             Timber.e("RecipeId from intent: "+recipeId);
             setSteps();
+            setIngredients();
+            showSelectedView();
 //            setVideoPlay();
         }
+    }
+
+    private void setIngredients() {
+        RealmResults<Ingredients> ingredientsFromThisRecipe
+                = RealmMethods.appRealm().where(Ingredients.class).equalTo("recipeId", recipeId).findAllSorted("order",Sort.ASCENDING);
+        String ingredientsText = "";
+        int ingredientIndex = 0;
+        for(Ingredients ingredients : ingredientsFromThisRecipe){
+            ingredientIndex++;
+            ingredientsText += ingredientIndex+": "+ingredients.getQuantity()+" "+ingredients.getMeasure()+" "+ingredients.getIngredient()+"\n";
+        }
+        ingredientsTv.setText(ingredientsText);
     }
 
     private void setSteps() {

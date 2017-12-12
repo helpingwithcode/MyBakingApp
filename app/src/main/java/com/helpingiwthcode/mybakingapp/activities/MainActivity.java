@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeAdapter;
+import com.helpingiwthcode.mybakingapp.model.Ingredients;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
