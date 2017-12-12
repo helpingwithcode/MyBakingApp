@@ -19,6 +19,7 @@ import com.helpingiwthcode.mybakingapp.adapters.RecipeAdapter;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
+import com.helpingiwthcode.mybakingapp.util.Preferences;
 import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
 import com.helpingiwthcode.mybakingapp.util.Utils;
 import com.helpingiwthcode.mybakingapp.util.VolleyUtils;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     RecyclerView recipesRv;
     @BindView(R.id.pb_loading)
     ProgressBar progressBar;
-
+    Preferences preferences;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
         RealmMethods.init(getApplicationContext());
+        preferences = new Preferences(this);
     }
 
     @Override
@@ -116,9 +118,11 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     @Override
     public void thisClick(int thisRecipeId) {
         //Intent recipeDetailIntent = new Intent(this,RecipeDetailActivity.class);
-        Intent recipeDetailIntent = new Intent(this,RecipeActivity.class);
-        recipeDetailIntent.putExtra("recipeId",thisRecipeId);
-        startActivity(recipeDetailIntent);
+//        Intent recipeDetailIntent = new Intent(this,RecipeActivity.class);
+//        recipeDetailIntent.putExtra("recipeId",thisRecipeId);
+//        startActivity(recipeDetailIntent);
+        preferences.addInt("recipeId",thisRecipeId);
+        startActivity(new Intent(this, RecipeActivity.class));
     }
 
     private int numberOfColumns() {
