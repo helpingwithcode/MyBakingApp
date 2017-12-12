@@ -115,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void thisClick(int thisRecipeId) {
-        Intent recipeDetailIntent = new Intent(this,RecipeDetailActivity.class);
+        //Intent recipeDetailIntent = new Intent(this,RecipeDetailActivity.class);
+        Intent recipeDetailIntent = new Intent(this,RecipeActivity.class);
         recipeDetailIntent.putExtra("recipeId",thisRecipeId);
         startActivity(recipeDetailIntent);
     }
