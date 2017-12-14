@@ -1,29 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_short_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Short Description"
-        android:textSize="18sp" />
+    <!--<TextView-->
+        <!--android:id="@+id/tv_step_index"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:text="1"-->
+        <!--android:textColor="@color/colorAccent"-->
+        <!--android:textSize="18sp"-->
+        <!--android:textStyle="bold" />-->
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/tv_short_description"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="16dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_toRightOf="@id/tv_step_index"-->
+        <!--android:text="Short Description"-->
+        <!--android:textSize="18sp" />-->
+
     <TextView
         android:id="@+id/tv_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_margin="16dp"
         android:text="Description"
         android:textSize="16sp" />
+    <!--android:layout_below="@id/tv_short_description"-->
+    <!--android:layout_toRightOf="@id/tv_step_index"-->
 
-</LinearLayout>
+</RelativeLayout>

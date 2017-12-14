@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -36,7 +37,6 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.helpingiwthcode.mybakingapp.R;
-import com.helpingiwthcode.mybakingapp.activities.RecipeDetailActivity;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeStepsAdapter;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
@@ -55,7 +55,7 @@ import timber.log.Timber;
 public class InstructionsFragment extends Fragment implements ExoPlayer.EventListener, RecipeStepsAdapter.RecipeStepAdapterOnClick{
     private Preferences preferences;
     private int recipeId;
-    private RealmResults<Steps> steps;
+    private RealmResults<Steps> allSteps;
     private RecipeStepsAdapter stepsAdapter;
     private FragmentActivity context;
 
@@ -91,15 +91,16 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
         preferences = new Preferences(context);
         recipeId = preferences.rInt("recipeId");
         setSteps();
+        //TODO verificar se existe video
+        //caso não exista, procurar imagem
+        //caso não exista, talvez mostrar ícone
         setVideoPlay();
     }
 
     private void setSteps() {
-//        recipe = RealmMethods.appRealm().where(Recipe.class).findFirst();
-//        recipeId = recipe.getId();
-        steps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findAllSorted("id", Sort.ASCENDING);
-        Timber.e("Steps from Recipe["+recipeId+"]: "+steps.toString());
-        stepsAdapter = new RecipeStepsAdapter(this,steps);
+        allSteps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findAllSorted("id", Sort.ASCENDING);
+        Timber.e("Steps from Recipe["+recipeId+"]: "+ allSteps.toString());
+        stepsAdapter = new RecipeStepsAdapter(this, allSteps);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         stepsRv.setLayoutManager(linearLayoutManager);
         stepsRv.setAdapter(stepsAdapter);
@@ -107,11 +108,7 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     }
 
     private void setVideoPlay() {
-//        Recipe recipe = RealmMethods.appRealm().where(Recipe.class).findFirst();
-//        int recipeId = recipe.getId();
-
-        Steps steps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findFirst();
-        String url = steps.getVideoURL();
+        String url = allSteps.get(0).getVideoURL();
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_recipe));
 
         initializeMediaSession();
@@ -158,8 +155,12 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
 
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(context, "ClassicalMusicQuiz");
-            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(recipeVideoUrl), new DefaultDataSourceFactory(
-                    context, userAgent), new DefaultExtractorsFactory(), null, null);
+            MediaSource mediaSource = new ExtractorMediaSource(
+                    Uri.parse(recipeVideoUrl),
+                    new DefaultDataSourceFactory(context, userAgent),
+                    new DefaultExtractorsFactory(),
+                    null,
+                    null);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -204,7 +205,12 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
 
     @Override
     public void thisClick(int thisStepId, int thisRecipeId) {
-
+        releasePlayer();
+        Timber.e("thisStepId: "+thisStepId+"\nthisRecipeId: "+thisRecipeId);
+        initializePlayer(allSteps.get(thisStepId).getVideoURL());
+        //TODO verificar se existe video
+        //caso não exista, procurar imagem
+        //caso não exista, talvez mostrar ícone
     }
 
     @Override
@@ -229,7 +235,7 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-
+        Toast.makeText(context, getString(R.string.message_error_video), Toast.LENGTH_SHORT).show();
     }
 
     @Override
