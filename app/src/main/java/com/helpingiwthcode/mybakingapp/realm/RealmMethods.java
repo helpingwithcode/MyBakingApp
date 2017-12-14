@@ -65,7 +65,7 @@ public class RealmMethods {
                 @Override
                 public void execute(Realm realm) {
                     for (RealmObject realmObject : objectArray)
-                        realm.insertOrUpdate(realmObject);
+                        realm.copyToRealmOrUpdate(realmObject);
                 }
             }, new Realm.Transaction.OnSuccess() {
                 @Override

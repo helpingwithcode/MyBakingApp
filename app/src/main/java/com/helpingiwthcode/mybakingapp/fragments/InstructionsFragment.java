@@ -37,6 +37,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.helpingiwthcode.mybakingapp.R;
+import com.helpingiwthcode.mybakingapp.activities.RecipeDetailActivity;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeStepsAdapter;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
@@ -52,7 +53,7 @@ import timber.log.Timber;
  * Created by root on 12/12/17.
  */
 
-public class InstructionsFragment extends Fragment implements ExoPlayer.EventListener, RecipeStepsAdapter.RecipeStepAdapterOnClick{
+public class InstructionsFragment extends Fragment implements ExoPlayer.EventListener, RecipeStepsAdapter.RecipeStepAdapterOnClick {
     private Preferences preferences;
     private int recipeId;
     private RealmResults<Steps> allSteps;
@@ -67,7 +68,8 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
-    public InstructionsFragment() {}
+    public InstructionsFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,17 +96,33 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
         //TODO verificar se existe video
         //caso não exista, procurar imagem
         //caso não exista, talvez mostrar ícone
-        setVideoPlay();
+        //checkStepMedia();
+        if(hasVideo(0))
+            setVideoPlay();
+    }
+
+    private void checkStepMedia() {
+        int i = -1;
+        for (Steps steps : allSteps) {
+            i++;
+            Timber.e("Order: " + steps.getOrder()
+                    + "\nVideo: " + steps.getVideoURL()
+                    + "\nThumbnail: " + steps.getThumbnailURL());
+            Timber.e("hasVideo: "+hasVideo(i));
+        }
+    }
+
+    public boolean hasVideo(int step){
+        return (!allSteps.get(step).getVideoURL().isEmpty());
     }
 
     private void setSteps() {
-        allSteps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findAllSorted("id", Sort.ASCENDING);
-        Timber.e("Steps from Recipe["+recipeId+"]: "+ allSteps.toString());
+        allSteps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId", recipeId).findAllSorted("id", Sort.ASCENDING);
         stepsAdapter = new RecipeStepsAdapter(this, allSteps);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         stepsRv.setLayoutManager(linearLayoutManager);
         stepsRv.setAdapter(stepsAdapter);
-        stepsRv.addItemDecoration(new DividerItemDecoration(stepsRv.getContext(),linearLayoutManager.getOrientation()));
+        stepsRv.addItemDecoration(new DividerItemDecoration(stepsRv.getContext(), linearLayoutManager.getOrientation()));
     }
 
     private void setVideoPlay() {
@@ -154,7 +172,7 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
             mExoPlayer.addListener(this);
 
             // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(context, "ClassicalMusicQuiz");
+            String userAgent = Util.getUserAgent(context, "Recipe");
             MediaSource mediaSource = new ExtractorMediaSource(
                     Uri.parse(recipeVideoUrl),
                     new DefaultDataSourceFactory(context, userAgent),
@@ -167,9 +185,14 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     }
 
     private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        try {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+        catch (Exception e){
+            Timber.e("Exception on releasePlayer: "+e.getLocalizedMessage());
+        }
     }
 
     /**
@@ -178,16 +201,19 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     private class MySessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
+            Timber.e("onPlay");
             mExoPlayer.setPlayWhenReady(true);
         }
 
         @Override
         public void onPause() {
+            Timber.e("onPause");
             mExoPlayer.setPlayWhenReady(false);
         }
 
         @Override
         public void onSkipToPrevious() {
+            Timber.e("onSkipToPrevious");
             mExoPlayer.seekTo(0);
         }
     }
@@ -206,8 +232,9 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     @Override
     public void thisClick(int thisStepId, int thisRecipeId) {
         releasePlayer();
-        Timber.e("thisStepId: "+thisStepId+"\nthisRecipeId: "+thisRecipeId);
-        initializePlayer(allSteps.get(thisStepId).getVideoURL());
+        Timber.e("thisStepId: " + thisStepId + "\nthisRecipeId: " + thisRecipeId);
+        if(hasVideo(thisStepId))
+            initializePlayer(allSteps.get(thisStepId).getVideoURL());
         //TODO verificar se existe video
         //caso não exista, procurar imagem
         //caso não exista, talvez mostrar ícone
@@ -215,31 +242,32 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
-
+        Timber.e("onTimelineChanged\ntimeline: " + timeline.toString());//+"\nmanifest: "+manifest.toString());
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
+        Timber.e("onTracksChanged\ntrackGroups: " + trackGroups.toString() + "\ntrackSelections: " + trackSelections.toString());
     }
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-
+        Timber.e("onLoadingChanged\nisLoading: " + isLoading);
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
+        Timber.e("onPlayerStateChanged\nplayWhenReady: " + playWhenReady + "\nplaybackState: " + playbackState);
     }
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-        Toast.makeText(context, getString(R.string.message_error_video), Toast.LENGTH_SHORT).show();
+        Timber.e("onPlayerError\nerror: " + error.getLocalizedMessage());
+        //Toast.makeText(context, getString(R.string.message_error_video), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPositionDiscontinuity() {
-
+        Timber.e("onPositionDiscontinuity");
     }
 }
