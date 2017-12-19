@@ -2,4 +2,7 @@
     <string name="app_name">My Baking App</string>
     <string name="log_recipes">Log Recipes</string>
     <string name="message_error_video">Ops... There\'s something worng with this video!</string>
+    <string name="recipe_description">Description</string>
+    <string name="text_recipe">Recipe Name</string>
+    <string name="text_servings">Servings: 8</string>
 </resources>

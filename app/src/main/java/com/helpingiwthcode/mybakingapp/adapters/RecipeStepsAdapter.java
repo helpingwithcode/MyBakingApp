@@ -26,14 +26,16 @@ import android.widget.TextView;
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 
+import java.util.List;
+
 import io.realm.RealmResults;
 
 public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepsAdapterViewHolder> {
 
     private final RecipeStepAdapterOnClick mClickHandler;
-    private RealmResults<Steps> recipeSteps;
+    private List<Steps> recipeSteps;
 
-    public RecipeStepsAdapter(RecipeStepAdapterOnClick clickHandler, RealmResults<Steps> allSteps) {
+    public RecipeStepsAdapter(RecipeStepAdapterOnClick clickHandler, List<Steps> allSteps) {
         mClickHandler = clickHandler;
         recipeSteps = allSteps;
     }

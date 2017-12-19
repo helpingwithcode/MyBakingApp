@@ -53,7 +53,7 @@ public class IngredientsFragment extends Fragment {
     }
 
     private void setIngredients() {
-        RealmResults<Ingredients> ingredientsFromThisRecipe = RealmMethods.appRealm()
+        RealmResults<Ingredients> ingredientsFromThisRecipe = RealmMethods.realm()
                 .where(Ingredients.class)
                 .equalTo("recipeId", recipeId)
                 .findAllSorted("order", Sort.ASCENDING);

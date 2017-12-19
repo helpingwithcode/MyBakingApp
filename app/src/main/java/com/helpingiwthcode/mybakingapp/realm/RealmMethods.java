@@ -5,7 +5,6 @@ import android.content.Context;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.util.BroadcastUtils;
 import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
-import com.helpingiwthcode.mybakingapp.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class RealmMethods {
     public static int objectToInsert = 0;
     public static boolean isInited = false;
 
-    public static Realm appRealm() {
+    public static Realm realm() {
         return Realm.getDefaultInstance();
     }
 
@@ -59,8 +58,7 @@ public class RealmMethods {
         Timber.e("insertWithTransaction(Array,Context)\nArray size: " + objectArray.size());
         Realm thisRealm = null;
         try {
-            thisRealm = appRealm();
-
+            thisRealm = realm();
             thisRealm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -76,6 +74,9 @@ public class RealmMethods {
         } catch (Exception e) {
             Timber.e("Exception on insertWithTransaction(Array,Context): " + e.getLocalizedMessage());
         }
+        finally {
+            closeInstance(thisRealm);
+        }
     }
 
     private static void finishInsertion(Context context) {
@@ -84,8 +85,8 @@ public class RealmMethods {
 
     public static void closeRealm() {
         try {
-            appRealm().close();
-            Realm.compactRealm(appRealm().getConfiguration());
+            realm().close();
+            Realm.compactRealm(realm().getConfiguration());
         } catch (Exception e) {
             Timber.e("Exception thrown on closeRealm() " + e.getLocalizedMessage());
         }
@@ -94,7 +95,7 @@ public class RealmMethods {
     public static void deleteRealm() {
         Realm realm = null;
         try {
-            realm = appRealm();
+            realm = realm();
             realm.close();
             Realm.deleteRealm(Realm.getDefaultConfiguration());
         } catch (Exception e) {
@@ -102,9 +103,8 @@ public class RealmMethods {
         }
     }
 
-    public static void logRecipes() {
-        RealmResults<Recipe> recipesResult = appRealm().where(Recipe.class).findAll();
-        for (Recipe recipe : recipesResult)
-            Timber.e("Recipe\nName: " + recipe.getName() + "\nId: " + recipe.getId() + "\nImage: " + recipe.getImage() + "\nServings: " + recipe.getServings());
+    public static void closeInstance(Realm realm) {
+        if(!realm.isClosed())
+            realm.close();
     }
 }

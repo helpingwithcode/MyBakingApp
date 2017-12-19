@@ -38,6 +38,7 @@ public class RecipeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setupTabViews(viewPager);
         tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.setColo
     }
 
     private void setupTabViews(ViewPager viewPager) {

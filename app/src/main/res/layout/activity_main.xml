@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    tools:context="com.helpingiwthcode.mybakingapp.activities.MainActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+<fragment
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/master_list_fragment"
+    android:name="com.helpingiwthcode.mybakingapp.fragments.RecipeListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
 
     <ProgressBar
         android:id="@+id/pb_loading"
         style="@style/ProgressBar"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_recipes"
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 </RelativeLayout>

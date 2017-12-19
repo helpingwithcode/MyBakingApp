@@ -20,20 +20,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.helpingiwthcode.mybakingapp.R;
+import com.helpingiwthcode.mybakingapp.dao.DAORecipe;
+import com.helpingiwthcode.mybakingapp.idao.IDAORecipes;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
+import com.squareup.picasso.Picasso;
 
-import io.realm.RealmResults;
+import java.util.List;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdapterViewHolder> {
 
     private final RecipeAdapterOnClick mClickHandler;
-    private RealmResults<Recipe> recipes;
+    private List<Recipe> recipes;
+    IDAORecipes idaoRecipes = new DAORecipe();
+    private String TESTE_URL = "";
+    private Context mContext;
 
-    public RecipeAdapter(RecipeAdapterOnClick clickHandler, RealmResults<Recipe> allRecipes) {
+    public RecipeAdapter(RecipeAdapterOnClick clickHandler, Context context) {
         mClickHandler = clickHandler;
-        recipes = allRecipes;
+        recipes = idaoRecipes.getRecipes();
+        mContext = context;
     }
 
     public interface RecipeAdapterOnClick {
@@ -41,13 +49,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     }
 
     public class RecipeAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private int thisMovieId;
         public final TextView recipeNameTv;
+        public final TextView recipeServingsTv;
+        //public final ImageView recipeImageIv;
         private int thisRecipeId;
 
         public RecipeAdapterViewHolder(View view) {
             super(view);
             recipeNameTv = view.findViewById(R.id.tv_recipe_name);
+            recipeServingsTv = view.findViewById(R.id.tv_recipe_servings);
+            //recipeImageIv = view.findViewById(R.id.iv_recipe_image);
             view.setOnClickListener(this);
         }
 
@@ -75,7 +86,20 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     public void onBindViewHolder(RecipeAdapterViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
         holder.recipeNameTv.setText(recipe.getName());
+        holder.recipeServingsTv.setText("Servings: "+recipe.getServings());
         holder.setThisRecipeId(recipe.getId());
+//        Picasso.with(mContext)
+//                .load("https://assets.epicurious.com/photos/54ac95e819925f464b3ac37e/master/pass/51229210_nutella-pie_1x1.jpg")
+//                .fit()
+//                .into(holder.recipeImageIv);
+//        if (!recipe.getImage().isEmpty()){
+//            Picasso.with(mContext)
+//                    .load(recipe.getImage())
+//                    .fit()
+//                    .into(holder.recipeImageIv);
+//        }
+//        else
+//            holder.recipeImageIv.setVisibility(View.GONE);
     }
 
     @Override

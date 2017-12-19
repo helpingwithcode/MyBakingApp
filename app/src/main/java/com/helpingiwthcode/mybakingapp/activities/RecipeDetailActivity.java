@@ -36,12 +36,16 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeStepsAdapter;
+import com.helpingiwthcode.mybakingapp.dao.DAOIngredients;
+import com.helpingiwthcode.mybakingapp.dao.DAOSteps;
+import com.helpingiwthcode.mybakingapp.idao.IDAOIngredients;
+import com.helpingiwthcode.mybakingapp.idao.IDAOSteps;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 
-import java.util.Timer;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,12 +67,14 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     TextView ingredientsTv;
     private Recipe recipe;
     private int recipeId;
-    private RealmResults<Steps> steps;
+    private List<Steps> steps;
     private RecipeStepsAdapter stepsAdapter;
     private DividerItemDecoration mDividerItemDecoration;
     private String INGREDIENTS = "ingredients";
     private String STEPS = "steps";
     private String showingView = STEPS;
+    IDAOIngredients idaoIngredients = new DAOIngredients();
+    IDAOSteps idaoSteps = new DAOSteps();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,11 +123,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     }
 
     private void setIngredients() {
-        RealmResults<Ingredients> ingredientsFromThisRecipe
-                = RealmMethods.appRealm().where(Ingredients.class).equalTo("recipeId", recipeId).findAllSorted("order",Sort.ASCENDING);
+        List<Ingredients> ingredientsList = idaoIngredients.getIngredientsFromRecipe(recipeId);
         String ingredientsText = "";
         int ingredientIndex = 0;
-        for(Ingredients ingredients : ingredientsFromThisRecipe){
+        for(Ingredients ingredients : ingredientsList){
             ingredientIndex++;
             ingredientsText += ingredientIndex+": "+ingredients.getQuantity()+" "+ingredients.getMeasure()+" "+ingredients.getIngredient()+"\n";
         }
@@ -129,9 +134,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     }
 
     private void setSteps() {
-//        recipe = RealmMethods.appRealm().where(Recipe.class).findFirst();
-//        recipeId = recipe.getId();
-        steps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findAllSorted("id", Sort.ASCENDING);
+        steps = idaoSteps.getStepsFromRecipe(recipeId);
         Timber.e("Steps from Recipe["+recipeId+"]: "+steps.toString());
         stepsAdapter = new RecipeStepsAdapter(this,steps);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -145,10 +148,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     }
 
     private void setVideoPlay() {
-//        Recipe recipe = RealmMethods.appRealm().where(Recipe.class).findFirst();
+//        Recipe recipe = RealmMethods.realm().where(Recipe.class).findFirst();
 //        int recipeId = recipe.getId();
 
-        Steps steps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId",recipeId).findFirst();
+        Steps steps = RealmMethods.realm().where(Steps.class).equalTo("recipeId",recipeId).findFirst();
         String url = steps.getVideoURL();
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_recipe));
 

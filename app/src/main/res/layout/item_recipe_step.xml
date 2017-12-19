@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="?android:attr/selectableItemBackground">
 
     <!--<TextView-->
         <!--android:id="@+id/tv_step_index"-->
@@ -35,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Description"
+        tools:text="@string/recipe_description"
         android:textSize="16sp" />
     <!--android:layout_below="@id/tv_short_description"-->
     <!--android:layout_toRightOf="@id/tv_step_index"-->

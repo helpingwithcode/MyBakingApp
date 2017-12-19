@@ -17,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -37,7 +36,6 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.helpingiwthcode.mybakingapp.R;
-import com.helpingiwthcode.mybakingapp.activities.RecipeDetailActivity;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeStepsAdapter;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
@@ -117,7 +115,7 @@ public class InstructionsFragment extends Fragment implements ExoPlayer.EventLis
     }
 
     private void setSteps() {
-        allSteps = RealmMethods.appRealm().where(Steps.class).equalTo("recipeId", recipeId).findAllSorted("id", Sort.ASCENDING);
+        allSteps = RealmMethods.realm().where(Steps.class).equalTo("recipeId", recipeId).findAllSorted("id", Sort.ASCENDING);
         stepsAdapter = new RecipeStepsAdapter(this, allSteps);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         stepsRv.setLayoutManager(linearLayoutManager);
