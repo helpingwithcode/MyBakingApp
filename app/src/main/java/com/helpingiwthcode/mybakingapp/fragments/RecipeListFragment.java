@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.activities.RecipeActivity;
+import com.helpingiwthcode.mybakingapp.activities.RecipeDetailActivity;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeAdapter;
 import com.helpingiwthcode.mybakingapp.util.Preferences;
 
@@ -80,6 +81,9 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
     @Override
     public void thisClick(int thisRecipeId) {
         preferences.addInt("recipeId",thisRecipeId);
-        startActivity(new Intent(getContext(), RecipeActivity.class));
+        //startActivity(new Intent(getContext(), RecipeActivity.class));
+        Intent recipeDetails = new Intent(getContext(), RecipeDetailActivity.class);
+        recipeDetails.putExtra("recipeId", thisRecipeId);
+        startActivity(recipeDetails);
     }
 }

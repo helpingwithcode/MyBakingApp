@@ -6,45 +6,22 @@
     android:layout_height="match_parent"
     tools:context="com.helpingiwthcode.mybakingapp.activities.RecipeDetailActivity">
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-        android:id="@+id/playerView"
-        android:layout_width="match_parent"
-        android:layout_height="250dp" />
-
-    <LinearLayout
-        android:id="@+id/ll_button_holder"
-        android:layout_below="@id/playerView"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="2">
+        android:text="Ingredients"/>
 
-        <Button
-            android:id="@+id/bt_steps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Steps"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/bt_ingredients"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ingredients"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_ingredients"
+        android:layout_margin="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ll_button_holder"
+        android:layout_below="@id/tv_ingredients"
         android:id="@+id/rv_steps"/>
 
-    <TextView
-        android:id="@+id/tv_ingredients"
-        android:layout_below="@id/ll_button_holder"
-        android:layout_margin="15dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 </RelativeLayout>

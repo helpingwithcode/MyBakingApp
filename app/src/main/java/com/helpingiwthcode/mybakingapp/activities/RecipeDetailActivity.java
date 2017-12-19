@@ -54,15 +54,15 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import timber.log.Timber;
 
-public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer.EventListener, RecipeStepsAdapter.RecipeStepAdapterOnClick{
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeStepsAdapter.RecipeStepAdapterOnClick {
 
-    private SimpleExoPlayer mExoPlayer;
-    private static MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat.Builder mStateBuilder;
-    @BindView(R.id.playerView) SimpleExoPlayerView mPlayerView;
+//    private SimpleExoPlayer mExoPlayer;
+//    private static MediaSessionCompat mMediaSession;
+//    private PlaybackStateCompat.Builder mStateBuilder;
+//    @BindView(R.id.playerView) SimpleExoPlayerView mPlayerView;
     @BindView(R.id.rv_steps) RecyclerView stepsRv;
-    @BindView(R.id.bt_steps) Button stepsBt;
-    @BindView(R.id.bt_ingredients) Button ingredientsBt;
+//    @BindView(R.id.bt_steps) Button stepsBt;
+//    @BindView(R.id.bt_ingredients) Button ingredientsBt;
     @BindView(R.id.tv_ingredients)
     TextView ingredientsTv;
     private Recipe recipe;
@@ -70,9 +70,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
     private List<Steps> steps;
     private RecipeStepsAdapter stepsAdapter;
     private DividerItemDecoration mDividerItemDecoration;
-    private String INGREDIENTS = "ingredients";
-    private String STEPS = "steps";
-    private String showingView = STEPS;
+//    private String INGREDIENTS = "ingredients";
+//    private String STEPS = "steps";
+//    private String showingView = STEPS;
     IDAOIngredients idaoIngredients = new DAOIngredients();
     IDAOSteps idaoSteps = new DAOSteps();
 
@@ -82,33 +82,31 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
         getRecipeIntent();
-//        setSteps();
-//        setVideoPlay();
     }
 
-    @OnClick({R.id.bt_ingredients, R.id.bt_steps})
-    public void onButtonClick(View v){
-        switch (v.getId()){
-            case R.id.bt_ingredients:
-                if(showingView.equals(INGREDIENTS))
-                    return;
-                showingView = INGREDIENTS;
-                showSelectedView();
-                break;
-            case R.id.bt_steps:
-                if(showingView.equals(STEPS))
-                    return;
-                showingView = STEPS;
-                showSelectedView();
-                break;
-        }
-    }
-
-    private void showSelectedView() {
-        boolean showingSteps = (showingView.equals(STEPS));
-        stepsRv.setVisibility((showingSteps)?View.VISIBLE:View.GONE);
-        ingredientsTv.setVisibility((!showingSteps)?View.VISIBLE:View.GONE);
-    }
+//    @OnClick({R.id.bt_ingredients, R.id.bt_steps})
+//    public void onButtonClick(View v){
+//        switch (v.getId()){
+//            case R.id.bt_ingredients:
+//                if(showingView.equals(INGREDIENTS))
+//                    return;
+//                showingView = INGREDIENTS;
+//                showSelectedView();
+//                break;
+//            case R.id.bt_steps:
+//                if(showingView.equals(STEPS))
+//                    return;
+//                showingView = STEPS;
+//                showSelectedView();
+//                break;
+//        }
+//    }
+//
+//    private void showSelectedView() {
+//        boolean showingSteps = (showingView.equals(STEPS));
+//        stepsRv.setVisibility((showingSteps)?View.VISIBLE:View.GONE);
+//        ingredientsTv.setVisibility((!showingSteps)?View.VISIBLE:View.GONE);
+//    }
 
     private void getRecipeIntent() {
         Bundle extra = getIntent().getExtras();
@@ -117,7 +115,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
             Timber.e("RecipeId from intent: "+recipeId);
             setSteps();
             setIngredients();
-            showSelectedView();
+            //showSelectedView();
 //            setVideoPlay();
         }
     }
@@ -147,137 +145,142 @@ public class RecipeDetailActivity extends AppCompatActivity implements ExoPlayer
         stepsRv.addItemDecoration(mDividerItemDecoration);
     }
 
-    private void setVideoPlay() {
-//        Recipe recipe = RealmMethods.realm().where(Recipe.class).findFirst();
-//        int recipeId = recipe.getId();
-
-        Steps steps = RealmMethods.realm().where(Steps.class).equalTo("recipeId",recipeId).findFirst();
-        String url = steps.getVideoURL();
-        mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_recipe));
-
-        initializeMediaSession();
-        initializePlayer(url);
-    }
-
-    private void initializeMediaSession() {
-
-        // Create a MediaSessionCompat.
-        mMediaSession = new MediaSessionCompat(this, "Recipe");
-
-        // Enable callbacks from MediaButtons and TransportControls.
-        mMediaSession.setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        // Do not let MediaButtons restart the player when the app is not visible.
-        mMediaSession.setMediaButtonReceiver(null);
-
-        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player.
-        mStateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY |
-                                PlaybackStateCompat.ACTION_PAUSE |
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
-
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        mMediaSession.setCallback(new MySessionCallback());
-        mMediaSession.setActive(true);
-
-    }
-
-    private void initializePlayer(String recipeVideoUrl) {
-        if (mExoPlayer == null) {
-            // Create an instance of the ExoPlayer.
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
-            mPlayerView.setPlayer(mExoPlayer);
-
-            // Set the ExoPlayer.EventListener to this activity.
-            mExoPlayer.addListener(this);
-
-            // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(this, "ClassicalMusicQuiz");
-            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(recipeVideoUrl), new DefaultDataSourceFactory(
-                    this, userAgent), new DefaultExtractorsFactory(), null, null);
-            mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
-        }
-    }
-
-    private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
-    }
-
-    @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
-    }
-
-    @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-    }
-
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
-            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
-                    mExoPlayer.getCurrentPosition(), 1f);
-        } else if((playbackState == ExoPlayer.STATE_READY)){
-            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
-                    mExoPlayer.getCurrentPosition(), 1f);
-        }
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        //showNotification(mStateBuilder.build());
-    }
-
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-    }
-
-    @Override
-    public void onPositionDiscontinuity() {
-    }
-
     @Override
     public void thisClick(int thisStepId, int thisRecipeId) {
 
     }
 
-    /**
-     * Media Session Callbacks, where all external clients control the player.
-     */
-    private class MySessionCallback extends MediaSessionCompat.Callback {
-        @Override
-        public void onPlay() {
-            mExoPlayer.setPlayWhenReady(true);
-        }
+//    private void setVideoPlay() {
+////        Recipe recipe = RealmMethods.realm().where(Recipe.class).findFirst();
+////        int recipeId = recipe.getId();
+//
+//        Steps steps = RealmMethods.realm().where(Steps.class).equalTo("recipeId",recipeId).findFirst();
+//        String url = steps.getVideoURL();
+//        mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_recipe));
+//
+//        initializeMediaSession();
+//        initializePlayer(url);
+//    }
 
-        @Override
-        public void onPause() {
-            mExoPlayer.setPlayWhenReady(false);
-        }
-
-        @Override
-        public void onSkipToPrevious() {
-            mExoPlayer.seekTo(0);
-        }
-    }
-
-    public static class MediaReceiver extends BroadcastReceiver {
-
-        public MediaReceiver() {
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            MediaButtonReceiver.handleIntent(mMediaSession, intent);
-        }
-    }
+//    private void initializeMediaSession() {
+//
+//        // Create a MediaSessionCompat.
+//        mMediaSession = new MediaSessionCompat(this, "Recipe");
+//
+//        // Enable callbacks from MediaButtons and TransportControls.
+//        mMediaSession.setFlags(
+//                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+//                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+//
+//        // Do not let MediaButtons restart the player when the app is not visible.
+//        mMediaSession.setMediaButtonReceiver(null);
+//
+//        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player.
+//        mStateBuilder = new PlaybackStateCompat.Builder()
+//                .setActions(
+//                        PlaybackStateCompat.ACTION_PLAY |
+//                                PlaybackStateCompat.ACTION_PAUSE |
+//                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+//                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+//
+//        mMediaSession.setPlaybackState(mStateBuilder.build());
+//        mMediaSession.setCallback(new MySessionCallback());
+//        mMediaSession.setActive(true);
+//
+//    }
+//
+//    private void initializePlayer(String recipeVideoUrl) {
+//        if (mExoPlayer == null) {
+//            // Create an instance of the ExoPlayer.
+//            TrackSelector trackSelector = new DefaultTrackSelector();
+//            LoadControl loadControl = new DefaultLoadControl();
+//            mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
+//            mPlayerView.setPlayer(mExoPlayer);
+//
+//            // Set the ExoPlayer.EventListener to this activity.
+//            mExoPlayer.addListener(this);
+//
+//            // Prepare the MediaSource.
+//            String userAgent = Util.getUserAgent(this, "ClassicalMusicQuiz");
+//            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(recipeVideoUrl), new DefaultDataSourceFactory(
+//                    this, userAgent), new DefaultExtractorsFactory(), null, null);
+//            mExoPlayer.prepare(mediaSource);
+//            mExoPlayer.setPlayWhenReady(true);
+//        }
+//    }
+//
+//    private void releasePlayer() {
+//        mExoPlayer.stop();
+//        mExoPlayer.release();
+//        mExoPlayer = null;
+//    }
+//
+//    @Override
+//    public void onTimelineChanged(Timeline timeline, Object manifest) {
+//    }
+//
+//    @Override
+//    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+//    }
+//
+//    @Override
+//    public void onLoadingChanged(boolean isLoading) {
+//    }
+//
+//    @Override
+//    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+//        if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
+//            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+//                    mExoPlayer.getCurrentPosition(), 1f);
+//        } else if((playbackState == ExoPlayer.STATE_READY)){
+//            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+//                    mExoPlayer.getCurrentPosition(), 1f);
+//        }
+//        mMediaSession.setPlaybackState(mStateBuilder.build());
+//        //showNotification(mStateBuilder.build());
+//    }
+//
+//    @Override
+//    public void onPlayerError(ExoPlaybackException error) {
+//    }
+//
+//    @Override
+//    public void onPositionDiscontinuity() {
+//    }
+//
+//    @Override
+//    public void thisClick(int thisStepId, int thisRecipeId) {
+//
+//    }
+//
+//    /**
+//     * Media Session Callbacks, where all external clients control the player.
+//     */
+//    private class MySessionCallback extends MediaSessionCompat.Callback {
+//        @Override
+//        public void onPlay() {
+//            mExoPlayer.setPlayWhenReady(true);
+//        }
+//
+//        @Override
+//        public void onPause() {
+//            mExoPlayer.setPlayWhenReady(false);
+//        }
+//
+//        @Override
+//        public void onSkipToPrevious() {
+//            mExoPlayer.seekTo(0);
+//        }
+//    }
+//
+//    public static class MediaReceiver extends BroadcastReceiver {
+//
+//        public MediaReceiver() {
+//        }
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            MediaButtonReceiver.handleIntent(mMediaSession, intent);
+//        }
+//    }
 }
