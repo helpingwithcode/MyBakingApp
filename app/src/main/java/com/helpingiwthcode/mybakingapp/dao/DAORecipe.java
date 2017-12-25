@@ -24,6 +24,7 @@ public class DAORecipe implements IDAORecipes {
             realm = RealmMethods.realm();
             recipesResults = realm.where(Recipe.class).findAll();
             recipesArray = realm.copyFromRealm(recipesResults);
+            Timber.e(recipesResults.toString());
         }
         catch (Exception e){
             Timber.e("Exception on getRecipes: "+e.getLocalizedMessage());

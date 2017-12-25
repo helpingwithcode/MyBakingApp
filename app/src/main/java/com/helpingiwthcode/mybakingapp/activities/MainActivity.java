@@ -3,12 +3,8 @@ package com.helpingiwthcode.mybakingapp.activities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -16,7 +12,6 @@ import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.adapters.RecipeAdapter;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 import com.helpingiwthcode.mybakingapp.util.Preferences;
-import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
 import com.helpingiwthcode.mybakingapp.util.Utils;
 import com.helpingiwthcode.mybakingapp.util.VolleyUtils;
 
@@ -26,10 +21,10 @@ import timber.log.Timber;
 
 import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.*;
 
-public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClick{
+public class MainActivity extends AppCompatActivity {
+//    implements
+//} RecipeAdapter.RecipeAdapterOnClick{
 
-//    @BindView(R.id.rv_recipes)
-//    RecyclerView recipesRv;
     @BindView(R.id.pb_loading)
     ProgressBar progressBar;
     Preferences preferences;
@@ -81,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         unregisterReceiver(broadcastReceiver);
     }
 
-    @Override
-    public void thisClick(int thisRecipeId) {
-        preferences.addInt("recipeId",thisRecipeId);
-        startActivity(new Intent(this, RecipeActivity.class));
-    }
+//    @Override
+//    public void thisClick(int thisRecipeId) {
+//        preferences.addInt("recipeId",thisRecipeId);
+//        startActivity(new Intent(this, RecipeActivity.class));
+//    }
 
 //    private void populateGridView() {
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

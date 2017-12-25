@@ -10,4 +10,7 @@ import java.util.List;
 
 public interface IDAOSteps {
     List<Steps> getStepsFromRecipe(int recipeId);
+    String getVideoUrl(int recipeId);
+    Steps getStepFromRecipe(int recipeId, int stepId);
+    boolean isLastStep(int recipeId, int stepId);
 }

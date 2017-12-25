@@ -28,8 +28,6 @@ import com.helpingiwthcode.mybakingapp.util.Preferences;
 public class RecipeListFragment extends Fragment implements RecipeAdapter.RecipeAdapterOnClick{
     RecyclerView recipesRv;
     Preferences preferences;
-    //ProgressBar progressBar;
-    // Mandatory empty constructor
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -55,12 +53,9 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-
         final View rootView = inflater.inflate(R.layout.fragment_recipe_list, container, false);
-
-        //progressBar = (ProgressBar) rootView.findViewById(R.id.pb_loading);
         preferences = new Preferences(getContext());
-        recipesRv = (RecyclerView) rootView.findViewById(R.id.rv_recipes);
+        recipesRv = rootView.findViewById(R.id.rv_recipes);
         return rootView;
     }
 
