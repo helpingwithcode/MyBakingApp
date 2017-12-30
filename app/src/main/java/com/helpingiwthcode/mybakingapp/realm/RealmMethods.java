@@ -1,8 +1,8 @@
 package com.helpingiwthcode.mybakingapp.realm;
 
 import android.content.Context;
+import android.os.Environment;
 
-import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.util.BroadcastUtils;
 import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
 
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
@@ -40,7 +39,8 @@ public class RealmMethods {
         File file = context.getExternalFilesDir("/bakingApp/Db/");
         RealmConfiguration realmConfiguration = new RealmConfiguration
                 .Builder()
-                .directory(file)
+                //.directory(file)
+                .directory(new File(getRealmPath(context)))
                 .name("db")
                 .schemaVersion(1)
                 .deleteRealmIfMigrationNeeded()
@@ -52,6 +52,14 @@ public class RealmMethods {
         Timber.e("buildAppRealm\n" +
                 "RealmDefaultConfiguration:\n" + Realm.getDefaultConfiguration() + "\n" +
                 "RealmDirectory: " + Realm.getDefaultConfiguration().getRealmDirectory());
+    }
+
+
+    public static String getRealmPath(Context context) {
+
+        String externalStorageDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String packageName = context.getApplicationContext().getPackageName();
+        return externalStorageDir + File.separator + "Android" + File.separator + "data" + File.separator + packageName + File.separator + "realm" + File.separator;
     }
 
     public static void insertWithTransaction(final ArrayList<RealmObject> objectArray, final Context context) {
@@ -104,7 +112,12 @@ public class RealmMethods {
     }
 
     public static void closeInstance(Realm realm) {
-        if(!realm.isClosed())
-            realm.close();
+        try {
+            if (!realm.isClosed())
+                realm.close();
+        }
+        catch (Exception e){
+            Timber.e("Exception on closeInstance: "+e.getLocalizedMessage());
+        }
     }
 }

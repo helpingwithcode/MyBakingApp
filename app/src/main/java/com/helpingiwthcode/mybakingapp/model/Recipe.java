@@ -14,6 +14,7 @@ public class Recipe extends RealmObject {
     private String name;
     private int servings;
     private String image;
+    private boolean onWidget;
 
     public int getId() {
         return id;
@@ -45,5 +46,13 @@ public class Recipe extends RealmObject {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isOnWidget() {
+        return onWidget;
+    }
+
+    public void setOnWidget(boolean onWidget) {
+        this.onWidget = onWidget;
     }
 }

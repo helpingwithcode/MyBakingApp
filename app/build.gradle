@@ -24,14 +24,17 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:26.1.0'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
-    })
+//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        exclude group: 'com.google.code.findbugs'
+//    })
+    //noinspection GradleDynamicVersion
     compile 'com.android.support:appcompat-v7:26+'
-    compile 'com.android.support:appcompat-v7:26.+'
+    //noinspection GradleDynamicVersion
     compile 'com.android.support:design:26.+'
+    //noinspection GradleDynamicVersion
     compile 'com.android.support:recyclerview-v7:26.+'
+    //noinspection GradleDynamicVersion
     compile 'com.android.support:cardview-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.code.gson:gson:2.7'
@@ -41,6 +44,24 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.android.exoplayer:exoplayer:r2.2.0'
-    testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+//    androidTestCompile 'com.android.support:support-annotations:26.1.0'
+//    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:3.0.1'
+    testCompile 'junit:junit:4.12'
+    //androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
+    })
+    compile 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
+
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:3.0.1") {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-v7'
+        exclude group: 'com.android.support', module: 'design'
+        exclude module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+        exclude group: 'com.google.code.findbugs'
+    }
 }

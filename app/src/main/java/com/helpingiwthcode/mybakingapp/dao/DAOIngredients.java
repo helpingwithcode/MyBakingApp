@@ -1,9 +1,7 @@
 package com.helpingiwthcode.mybakingapp.dao;
 
 import com.helpingiwthcode.mybakingapp.idao.IDAOIngredients;
-import com.helpingiwthcode.mybakingapp.idao.IDAORecipes;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
-import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 
 import java.util.List;

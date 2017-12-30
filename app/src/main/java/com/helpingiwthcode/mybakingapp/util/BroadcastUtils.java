@@ -14,4 +14,7 @@ public class BroadcastUtils {
     public static void sendBroadcast(Context context, String intentName){
         context.sendBroadcast(new Intent(intentName));
     }
+    public static void sendBroadcast(Context context, Intent thisIntent){
+        context.sendBroadcast(thisIntent);
+    }
 }

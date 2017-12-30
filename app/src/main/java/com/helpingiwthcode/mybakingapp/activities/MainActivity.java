@@ -4,14 +4,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
-
 import com.helpingiwthcode.mybakingapp.R;
-import com.helpingiwthcode.mybakingapp.adapters.RecipeAdapter;
+import com.helpingiwthcode.mybakingapp.dao.DAORecipe;
+import com.helpingiwthcode.mybakingapp.idao.IDAORecipes;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
-import com.helpingiwthcode.mybakingapp.util.Preferences;
+import com.helpingiwthcode.mybakingapp.util.BroadcastUtils;
+import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
+import com.helpingiwthcode.mybakingapp.util.SimpleIdlingResource;
 import com.helpingiwthcode.mybakingapp.util.Utils;
 import com.helpingiwthcode.mybakingapp.util.VolleyUtils;
 
@@ -22,12 +26,9 @@ import timber.log.Timber;
 import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.*;
 
 public class MainActivity extends AppCompatActivity {
-//    implements
-//} RecipeAdapter.RecipeAdapterOnClick{
-
     @BindView(R.id.pb_loading)
     ProgressBar progressBar;
-    Preferences preferences;
+    IDAORecipes idaoRecipes = new DAORecipe();
     boolean firstPermissionCheck = true;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -37,15 +38,23 @@ public class MainActivity extends AppCompatActivity {
                 Utils.checkPermissions(MainActivity.this, context);
             else if (action.equals(BROADCAST_PERMISSIONS_GRANTED))
                 getRecipes();
-            else if(action.equals(BROADCAST_DONE_INSERTING))
+            else if (action.equals(BROADCAST_DONE_INSERTING))
                 inflateFragment();
-                //populateGridView();
+            else if (action.equals(BROADCAST_RECIPE_CLICKED))
+                showRecipeDetails(intent.getExtras());
         }
     };
 
-    private void inflateFragment() {
-        getApplicationContext().sendBroadcast(new Intent("ShowRecipes"));
-        showLoadingStatus(false);
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+    @Nullable
+    @VisibleForTesting
+    public SimpleIdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
     }
 
     @Override
@@ -55,7 +64,19 @@ public class MainActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         ButterKnife.bind(this);
         RealmMethods.init(getApplicationContext());
-        preferences = new Preferences(this);
+    }
+
+    private void showRecipeDetails(Bundle extras) {
+        int thisRecipeId = extras.getInt(RecipeUtils.RECIPE_ID, 0);
+        Intent recipeDetails = new Intent(this, RecipeDetailActivity.class);
+        recipeDetails.putExtra(RecipeUtils.RECIPE_ID, thisRecipeId);
+        startActivity(recipeDetails);
+        finish();
+    }
+
+    private void inflateFragment() {
+        BroadcastUtils.sendBroadcast(getApplicationContext(),RecipeUtils.BROADCAST_SHOW_RECIPES);
+        showLoadingStatus(false);
     }
 
     @Override
@@ -65,8 +86,7 @@ public class MainActivity extends AppCompatActivity {
         if (firstPermissionCheck) {
             firstPermissionCheck = false;
             Utils.checkPermissions(MainActivity.this, getApplicationContext());
-        }
-        else
+        } else
             getRecipes();
     }
 
@@ -76,28 +96,15 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-//    @Override
-//    public void thisClick(int thisRecipeId) {
-//        preferences.addInt("recipeId",thisRecipeId);
-//        startActivity(new Intent(this, RecipeActivity.class));
-//    }
-
-//    private void populateGridView() {
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-//        RecipeAdapter adapter = new RecipeAdapter(this, getApplicationContext());
-//        recipesRv.setLayoutManager(linearLayoutManager);
-//        recipesRv.setHasFixedSize(true);
-//        recipesRv.setAdapter(adapter);
-//        showLoadingStatus(false);
-//    }
-
     private void getRecipes() {
         showLoadingStatus(true);
-        VolleyUtils.getRecipes(getApplicationContext());
+        if(idaoRecipes.getRecipes().size() == 0)
+            VolleyUtils.getRecipes(getApplicationContext());
+        else
+            inflateFragment();
     }
 
     private void showLoadingStatus(boolean b) {
         progressBar.setVisibility((!b) ? View.INVISIBLE : View.VISIBLE);
-       // recipesRv.setVisibility((b) ? View.INVISIBLE : View.VISIBLE);
     }
 }

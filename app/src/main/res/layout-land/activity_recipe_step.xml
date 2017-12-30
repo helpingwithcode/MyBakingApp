@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.helpingiwthcode.mybakingapp.activities.RecipeStepActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/ep_video"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:resize_mode="fill" />
+
+        <TextView
+            android:id="@+id/tv_step_short"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/recipe_step_short_description"
+            android:layout_below="@id/ep_video" />
+
+        <TextView
+            android:id="@+id/tv_recipe_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_step_short"
+            style="@style/recipe_step_description" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipe_step"
+            style="@style/linear_layout_button_holder">
+
+            <Button
+                android:id="@+id/bt_previous_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/button_step"
+                android:text="@string/button_previous" />
+
+            <Button
+                android:id="@+id/bt_next_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/button_step"
+                android:text="@string/button_next" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>

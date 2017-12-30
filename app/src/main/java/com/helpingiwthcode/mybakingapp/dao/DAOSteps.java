@@ -1,7 +1,6 @@
 package com.helpingiwthcode.mybakingapp.dao;
 
 import com.helpingiwthcode.mybakingapp.idao.IDAOSteps;
-import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 
@@ -19,7 +18,6 @@ import timber.log.Timber;
 public class DAOSteps implements IDAOSteps {
     @Override
     public List<Steps> getStepsFromRecipe(int recipeId) {
-        //RealmMethods.realm();
         List<Steps> stepsList = null;
         RealmResults<Steps> stepsResults = null;
         Realm realm = null;
@@ -27,7 +25,6 @@ public class DAOSteps implements IDAOSteps {
             realm = RealmMethods.realm();
             stepsResults = realm.where(Steps.class).equalTo("recipeId",recipeId).findAllSorted("id", Sort.ASCENDING);
             stepsList = realm.copyFromRealm(stepsResults);
-            logRecipeSteps(stepsResults);
         }
         catch (Exception e){
             Timber.e("Exception on getStepsFromRecipe: "+e.getLocalizedMessage());
@@ -36,12 +33,6 @@ public class DAOSteps implements IDAOSteps {
             RealmMethods.closeInstance(realm);
         }
         return stepsList;
-    }
-
-    private void logRecipeSteps(RealmResults<Steps> stepsResults) {
-        Timber.e("Steps: "+stepsResults.size());
-        for(Steps steps : stepsResults)
-            Timber.e("Step: "+steps.toString());
     }
 
     public String getVideoUrl(int recipeId) {
@@ -97,6 +88,46 @@ public class DAOSteps implements IDAOSteps {
             RealmMethods.closeInstance(realm);
         }
         return isLastStep;
+    }
+
+    @Override
+    public boolean isStepAvailable(int recipeId, int stepIndex, String direction) {
+        boolean isAvailable = false;
+        int stepIndexToCheck = (direction.equals("next")) ? stepIndex+1 : stepIndex-1;
+        Realm realm = null;
+        try{
+            realm = RealmMethods.realm();
+            Steps step = realm.where(Steps.class).equalTo("id", stepIndexToCheck).equalTo("recipeId",recipeId).findFirst();
+            if(step != null)
+                isAvailable = true;
+        }
+        catch (Exception e){
+            Timber.e("Exception on isStepAvailable: "+e.getLocalizedMessage());
+        }
+        finally {
+            RealmMethods.closeInstance(realm);
+        }
+        Timber.e("isStep "+stepIndexToCheck+" Available? "+isAvailable);
+        return isAvailable;
+    }
+
+    @Override
+    public int getStepCount(int recipeId) {
+        int stepsCount = 0;
+        RealmResults<Steps> steps = null;
+        Realm realm = null;
+        try{
+            realm = RealmMethods.realm();
+            steps = realm.where(Steps.class).equalTo("recipeId",recipeId).findAll();
+            stepsCount = steps.size()-1;
+        }
+        catch (Exception e){
+            Timber.e("Exception on isLastStep: "+e.getLocalizedMessage());
+        }
+        finally {
+            RealmMethods.closeInstance(realm);
+        }
+        return stepsCount;
     }
 
 }

@@ -16,7 +16,6 @@ import com.android.volley.toolbox.Volley;
 public class VolleyUtils {
     public static void getRecipes(final Context context){
         String urlPath = RecipeUtils.BASE_URL;
-        //Timber.e("getRecipes from: "+urlPath);
         final RequestQueue requestFromServer = Volley.newRequestQueue(context);
         final StringRequest toSend = new StringRequest(Request.Method.GET , urlPath, new Response.Listener<String>() {
             @Override

@@ -13,4 +13,6 @@ public interface IDAOSteps {
     String getVideoUrl(int recipeId);
     Steps getStepFromRecipe(int recipeId, int stepId);
     boolean isLastStep(int recipeId, int stepId);
+    boolean isStepAvailable(int recipeId, int stepIndex, String direction);
+    int getStepCount(int recipeId);
 }

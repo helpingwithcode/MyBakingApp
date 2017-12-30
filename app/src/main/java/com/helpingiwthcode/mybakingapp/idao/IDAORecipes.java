@@ -10,4 +10,11 @@ import java.util.List;
 
 public interface IDAORecipes {
     List<Recipe> getRecipes();
+    String getRecipeName(int recipeId);
+    void setAsWidget(int recipeId);
+    Recipe getRecipeToWidget();
+
+    boolean isRecipeOnWidget(int recipeId);
+    void removeAsWidget(int recipeId);
+    int getWidgetRecipeId();
 }

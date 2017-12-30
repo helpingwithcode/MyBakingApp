@@ -8,29 +8,27 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.BROADCAST_DONE_INSERTING;
+import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.BROADCAST_PERMISSIONS_DENIED;
+import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.BROADCAST_PERMISSIONS_GRANTED;
+import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.BROADCAST_RECIPE_CLICKED;
 
 /**
  * Created by root on 08/12/17.
  */
 
 public class Utils {
+
     public static void checkPermissions(Activity activity, Context context) {
         String[] permissions = new String[]{
                 Manifest.permission.INTERNET,
-//                Manifest.permission.CAMERA,
-//                Manifest.permission.READ_PHONE_STATE,
-//                Manifest.permission.ACCESS_NETWORK_STATE,
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.ACCESS_WIFI_STATE,
-//                Manifest.permission.CHANGE_WIFI_STATE,
         };
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String permission : permissions)
             if (!(ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED))
                 list.add(permission);
@@ -41,14 +39,15 @@ public class Utils {
         if(list.size() > 0)
             ActivityCompat.requestPermissions(activity, newPermissions, 1);
         else
-            BroadcastUtils.sendBroadcast(context,RecipeUtils.BROADCAST_PERMISSIONS_GRANTED);
+            BroadcastUtils.sendBroadcast(context, BROADCAST_PERMISSIONS_GRANTED);
     }
 
     public static IntentFilter getMainIntentFilters() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RecipeUtils.BROADCAST_PERMISSIONS_DENIED);
-        intentFilter.addAction(RecipeUtils.BROADCAST_PERMISSIONS_GRANTED);
-        intentFilter.addAction(RecipeUtils.BROADCAST_DONE_INSERTING);
+        intentFilter.addAction(BROADCAST_PERMISSIONS_DENIED);
+        intentFilter.addAction(BROADCAST_PERMISSIONS_GRANTED);
+        intentFilter.addAction(BROADCAST_DONE_INSERTING);
+        intentFilter.addAction(BROADCAST_RECIPE_CLICKED);
         return intentFilter;
     }
 }

@@ -35,7 +35,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     private final RecipeAdapterOnClick mClickHandler;
     private List<Recipe> recipes;
     IDAORecipes idaoRecipes = new DAORecipe();
-    private String TESTE_URL = "";
     private Context mContext;
 
     public RecipeAdapter(RecipeAdapterOnClick clickHandler, Context context) {
@@ -51,14 +50,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     public class RecipeAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView recipeNameTv;
         public final TextView recipeServingsTv;
-        //public final ImageView recipeImageIv;
+        public final ImageView recipeThumbnailTv;
         private int thisRecipeId;
 
         public RecipeAdapterViewHolder(View view) {
             super(view);
             recipeNameTv = view.findViewById(R.id.tv_recipe_name);
             recipeServingsTv = view.findViewById(R.id.tv_recipe_servings);
-            //recipeImageIv = view.findViewById(R.id.iv_recipe_image);
+            recipeThumbnailTv = view.findViewById(R.id.iv_recipe_thumbnail);
             view.setOnClickListener(this);
         }
 
@@ -86,20 +85,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     public void onBindViewHolder(RecipeAdapterViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
         holder.recipeNameTv.setText(recipe.getName());
-        holder.recipeServingsTv.setText("Servings: "+recipe.getServings());
+        holder.recipeServingsTv.setText(String.format(mContext.getString(R.string.text_servings),String.valueOf(recipe.getServings())));
         holder.setThisRecipeId(recipe.getId());
-//        Picasso.with(mContext)
-//                .load("https://assets.epicurious.com/photos/54ac95e819925f464b3ac37e/master/pass/51229210_nutella-pie_1x1.jpg")
-//                .fit()
-//                .into(holder.recipeImageIv);
-//        if (!recipe.getImage().isEmpty()){
-//            Picasso.with(mContext)
-//                    .load(recipe.getImage())
-//                    .fit()
-//                    .into(holder.recipeImageIv);
-//        }
-//        else
-//            holder.recipeImageIv.setVisibility(View.GONE);
+        if (!recipe.getImage().isEmpty()){
+            Picasso.with(mContext)
+                    .load(recipe.getImage())
+                    .fit()
+                    .into(holder.recipeThumbnailTv);
+        }
+        else
+            holder.recipeThumbnailTv.setVisibility(View.GONE);
     }
 
     @Override

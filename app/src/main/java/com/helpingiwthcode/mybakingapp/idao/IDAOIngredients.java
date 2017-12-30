@@ -1,7 +1,6 @@
 package com.helpingiwthcode.mybakingapp.idao;
 
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
-import com.helpingiwthcode.mybakingapp.model.Recipe;
 
 import java.util.List;
 

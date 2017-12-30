@@ -20,15 +20,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 
 import java.util.List;
-
-import io.realm.RealmResults;
 
 public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepsAdapterViewHolder> {
 
@@ -46,16 +43,12 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
 
     public class RecipeStepsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView recipeStepDescription;
-//        public final TextView recipeStepShortDescription;
-        //public final TextView recipeIndex;
         private int thisStepId;
         private int thisRecipeId;
 
         public RecipeStepsAdapterViewHolder(View view) {
             super(view);
-//            recipeIndex = view.findViewById(R.id.tv_step_index);
             recipeStepDescription = view.findViewById(R.id.tv_description);
-            //recipeStepShortDescription = view.findViewById(R.id.tv_short_description);
             view.setOnClickListener(this);
         }
 
@@ -80,9 +73,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
     @Override
     public void onBindViewHolder(RecipeStepsAdapterViewHolder holder, int position) {
         Steps step = recipeSteps.get(position);
-        //holder.recipeStepShortDescription.setText(step.getShortDescription());
-        holder.recipeStepDescription.setText(step.getDescription());
-//        holder.recipeIndex.setText(String.valueOf(position));
+        holder.recipeStepDescription.setText(step.getShortDescription());
         holder.setThisStepId(step.getId(),step.getRecipeId());
     }
 

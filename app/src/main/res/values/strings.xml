@@ -4,8 +4,18 @@
     <string name="message_error_video">Ops... There\'s something worng with this video!</string>
     <string name="recipe_description">Description</string>
     <string name="text_recipe">Recipe Name</string>
-    <string name="text_servings">Servings: 8</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="text_servings">Servings: %1$s</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="key_scrollview_position">scroll_view_position</string>
+    <string name="recipe_detail_title">%1$s Recipe Details</string>
+    <string name="recipe_step_title">Recipe steps for %1$s</string>
+    <string name="menu_title_widget">Add this Recipe ingredients on widget</string>
+    <string name="recipe_added_widget">Now the ingredients of this recipe will be displayed on your widget!</string>
+    <string name="recipe_remove_widget">The ingredients of this recipe were removed from the widget!</string>
+    <string name="button_previous">Previous</string>
+    <string name="button_next">Next</string>
+    <string name="recipe_detail_ingredients">Ingredients</string>
+    <string name="recipe_detail_instructions">Instructions</string>
+    <string name="widget_message_no_ingredients">You haven\'t picked a recipe to display yet!</string>
+    <string name="widget_title">List of Ingredients for %1$s</string>
 </resources>

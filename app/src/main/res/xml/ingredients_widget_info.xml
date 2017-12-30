@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:minHeight="180dp"
+    android:minWidth="290dp"
+    android:updatePeriodMillis="300000"
+    android:initialKeyguardLayout="@layout/ingredients_widget"
+    android:initialLayout="@layout/ingredients_widget"
+    android:widgetCategory="home_screen"
+    tools:targetApi="jelly_bean_mr1" />

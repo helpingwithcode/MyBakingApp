@@ -1,13 +1,17 @@
 package com.helpingiwthcode.mybakingapp.util;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
 import com.helpingiwthcode.mybakingapp.model.Recipe;
 import com.helpingiwthcode.mybakingapp.model.Steps;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
+import com.helpingiwthcode.mybakingapp.widget.IngredientsWidget;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,8 +31,13 @@ public class RecipeUtils {
     public static final String BROADCAST_PERMISSIONS_GRANTED = "recipe.permissions.granted";
     public static final String BROADCAST_PERMISSIONS_DENIED = "recipe.permissions.denied";
     public static final String BROADCAST_DONE_INSERTING = "broadcast.insert.finish";
+    public static final String BROADCAST_RECIPE_CLICKED = "broadcast.recipe.clicked";
+    public static final String BROADCAST_STEP_CLICKED = "broadcast.step.clicked";
+    public static final String BROADCAST_SHOW_RECIPES = "broadcast.show.recipes";
+    public static final String RECIPE_ID = "recipeId";
+    public static final String STEP_ID = "stepId";
+    public static final String APP_NAME = "MyBakingApp";
     private static ArrayList<RealmObject> realmObjectsToInsert;
-    private static int TOTAL_CLASSES_TO_INSERT = 3;
     private static int CLASSES_READY_TO_INSERT;
 
     public static void parseServerResponse(String responseString, Context context) {
@@ -39,6 +48,7 @@ public class RecipeUtils {
             JSONArray response = new JSONArray(responseString);
             JSONObject recipe;
             int recipeId;
+            int TOTAL_CLASSES_TO_INSERT = 3;
             RealmMethods.objectToInsert = response.length() * TOTAL_CLASSES_TO_INSERT;
             for (int i = 0; i < response.length(); i++) {
                 recipe = new JSONObject(String.valueOf(response.get(i)));
@@ -122,5 +132,12 @@ public class RecipeUtils {
         Recipe realmRecipe = new Gson().fromJson(recipe.toString(), Recipe.class);
         realmObjectsToInsert.add(realmRecipe);
         startInsertion(context);
+    }
+
+    public static void updateWidget(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, IngredientsWidget.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.gv_ingredient);
+        IngredientsWidget.updateIngredientsWidget(context, appWidgetManager,appWidgetIds);
     }
 }

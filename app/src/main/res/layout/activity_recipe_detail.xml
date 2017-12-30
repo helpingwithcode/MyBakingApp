@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="wrap_content"
+<RelativeLayout
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android" >
-    <fragment
+
+    <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/master_list_fragment"
-        android:name="com.helpingiwthcode.mybakingapp.fragments.RecipeDetailFragment"
+        android:id="@+id/fragment_recipe_master"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
