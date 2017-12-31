@@ -11,6 +11,7 @@ import com.helpingiwthcode.mybakingapp.dao.DAORecipe;
 import com.helpingiwthcode.mybakingapp.idao.IDAOIngredients;
 import com.helpingiwthcode.mybakingapp.idao.IDAORecipes;
 import com.helpingiwthcode.mybakingapp.model.Ingredients;
+import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
     public IngredientsRemoteViewsFactory(Context applicationContext) {
         mContext = applicationContext;
+        RealmMethods.init(mContext);
     }
 
     @Override

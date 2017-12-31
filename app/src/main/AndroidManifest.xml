@@ -29,7 +29,7 @@
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.RecipeStepActivity"
-            android:launchMode="singleTop"
+
             android:parentActivityName=".activities.RecipeDetailActivity"/>
 
         <receiver android:name=".widget.IngredientsWidget">

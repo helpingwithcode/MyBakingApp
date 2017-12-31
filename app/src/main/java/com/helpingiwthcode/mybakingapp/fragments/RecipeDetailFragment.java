@@ -105,7 +105,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeStepsAdapter
 
     private void setSteps() {
         List<Steps> steps = idaoSteps.getStepsFromRecipe(recipeId);
-        RecipeStepsAdapter stepsAdapter = new RecipeStepsAdapter(this, steps);
+        RecipeStepsAdapter stepsAdapter = new RecipeStepsAdapter(getContext(),this, steps);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         stepsRv.setLayoutManager(linearLayoutManager);
         stepsRv.setAdapter(stepsAdapter);

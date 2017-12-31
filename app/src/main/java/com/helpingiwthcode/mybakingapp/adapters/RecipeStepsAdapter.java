@@ -20,21 +20,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.helpingiwthcode.mybakingapp.R;
 import com.helpingiwthcode.mybakingapp.model.Steps;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepsAdapterViewHolder> {
 
     private final RecipeStepAdapterOnClick mClickHandler;
+    private final Context mContext;
     private List<Steps> recipeSteps;
 
-    public RecipeStepsAdapter(RecipeStepAdapterOnClick clickHandler, List<Steps> allSteps) {
+    public RecipeStepsAdapter(Context context, RecipeStepAdapterOnClick clickHandler, List<Steps> allSteps) {
         mClickHandler = clickHandler;
         recipeSteps = allSteps;
+        mContext = context;
     }
 
     public interface RecipeStepAdapterOnClick {
@@ -43,12 +47,14 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
 
     public class RecipeStepsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView recipeStepDescription;
+        public final ImageView thumbnailIv;
         private int thisStepId;
         private int thisRecipeId;
 
         public RecipeStepsAdapterViewHolder(View view) {
             super(view);
             recipeStepDescription = view.findViewById(R.id.tv_description);
+            thumbnailIv = view.findViewById(R.id.iv_thumbnail);
             view.setOnClickListener(this);
         }
 
@@ -75,6 +81,14 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         Steps step = recipeSteps.get(position);
         holder.recipeStepDescription.setText(step.getShortDescription());
         holder.setThisStepId(step.getId(),step.getRecipeId());
+        if (!step.getThumbnailURL().isEmpty()){
+            Picasso.with(mContext)
+                    .load(step.getThumbnailURL())
+                    .fit()
+                    .into(holder.thumbnailIv);
+        }
+        else
+            holder.thumbnailIv.setVisibility(View.GONE);
     }
 
     @Override

@@ -15,9 +15,12 @@ import com.helpingiwthcode.mybakingapp.idao.IDAORecipes;
 import com.helpingiwthcode.mybakingapp.realm.RealmMethods;
 import com.helpingiwthcode.mybakingapp.util.RecipeUtils;
 
+import timber.log.Timber;
+
 import static com.helpingiwthcode.mybakingapp.util.RecipeUtils.BROADCAST_STEP_CLICKED;
 
 public class RecipeStepActivity extends AppCompatActivity {
+    RecipeStepFragment stepFragment;
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -41,15 +44,25 @@ public class RecipeStepActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_step);
         RealmMethods.init(getApplicationContext());
         setTitle(String.format(getString(R.string.recipe_step_title), getRecipeName()));
-        populateFragment(getIntent().getExtras());
+        populateFragment(savedInstanceState,getIntent().getExtras());
     }
 
-    private void populateFragment(Bundle extras) {
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (stepFragment.isAdded())
+            getSupportFragmentManager().putFragment(outState, "stepFragment", stepFragment);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void populateFragment(Bundle savedInstanceState, Bundle extras) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        RecipeStepFragment recipeStepFragment = new RecipeStepFragment();
-        recipeStepFragment.setArguments(extras);
+        if (savedInstanceState != null)
+            stepFragment = (RecipeStepFragment) getSupportFragmentManager().getFragment(savedInstanceState, "stepFragment");
+        else
+            stepFragment = new RecipeStepFragment();
+        stepFragment.setArguments(extras);
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_step, recipeStepFragment)
+                .replace(R.id.fragment_step, stepFragment)
                 .commit();
     }
 
@@ -69,5 +82,11 @@ public class RecipeStepActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Timber.e("OnDestroy");
     }
 }

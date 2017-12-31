@@ -1,5 +1,6 @@
 package com.helpingiwthcode.mybakingapp.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -14,13 +15,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -57,6 +63,7 @@ public class RecipeStepFragment extends Fragment{
     Button previousStepBt;
     private SimpleExoPlayer mExoPlayer;
     private boolean isTabletDevice;
+    public long exoPlayerCurrentPosition = 0;
 
     public RecipeStepFragment() {
     }
@@ -72,8 +79,26 @@ public class RecipeStepFragment extends Fragment{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         isTabletDevice = getResources().getBoolean(R.bool.isTablet);
+        checkSavedInstance(savedInstanceState);
         getStepIntent();
         setVideoHolderSize();
+    }
+
+    private void checkSavedInstance(Bundle savedInstanceState) {
+        Timber.e("Checking savedInstance");
+        if(savedInstanceState != null){
+            //long videoPosition = savedInstanceState.getLong("playerPosition");
+            exoPlayerCurrentPosition = savedInstanceState.getLong("playerPosition");
+            //mExoPlayer.seekTo(videoPosition);
+            Timber.e("mExoPlayer. will seekTo("+exoPlayerCurrentPosition+");");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Timber.e("Saving player position: "+exoPlayerCurrentPosition);
+        outState.putLong("playerPosition", exoPlayerCurrentPosition);
     }
 
     private void getStepIntent() {
@@ -131,6 +156,10 @@ public class RecipeStepFragment extends Fragment{
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+            Timber.e("exoPlayerCurrentPosition: "+exoPlayerCurrentPosition);
+            if(exoPlayerCurrentPosition != 0)
+                mExoPlayer.seekTo(exoPlayerCurrentPosition);
+            Timber.e("initializePlayer\nmExoPlayer.seekTo("+exoPlayerCurrentPosition+");");
             mPlayerView.setPlayer(mExoPlayer);
             String userAgent = Util.getUserAgent(getContext(), RecipeUtils.APP_NAME);
             MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(recipeVideoUrl), new DefaultDataSourceFactory(
@@ -167,6 +196,7 @@ public class RecipeStepFragment extends Fragment{
 
     private void releasePlayer() {
         try {
+            exoPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
@@ -184,5 +214,6 @@ public class RecipeStepFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
+        releasePlayer();
     }
 }
